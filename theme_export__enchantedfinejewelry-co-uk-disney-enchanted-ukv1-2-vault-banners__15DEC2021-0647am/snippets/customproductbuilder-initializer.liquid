@@ -1,0 +1,51 @@
+{% comment %} == BEGIN CUSTOM PRODUCT BUILDER GENERATED CODE. DO NOT EDIT OR REMOVE. == {% endcomment %}
+{% if shop.metafields.customproductbuilder %}
+	{% assign productId = product.id | append: '' %}
+  {% assign productList = shop.metafields.customproductbuilder.productEditor | split: ',' %}
+	{% if productList contains productId%}
+	{{'https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js' | script_tag}}
+	{{ '//cdn.shopify.com/s/assets/external/app.js' | script_tag}}
+	{{'https://master.thecustomproductbuilder.com/dist/custom-product-builder.js' | script_tag}}
+    {{'https://master.thecustomproductbuilder.com/dist/customizer-theme-main.js'| script_tag}}
+	{{ 'customproductbuilder.css' | asset_url | stylesheet_tag }}
+		<div
+		id="product-builder"
+      data-engine="shopify"
+      data-shop-name="{{shop.permanent_domain}}"
+      data-product-id="{{productId}}"
+      product-handle="{{ product.handle }}"       
+      data-styles-path="{{'customproductbuilder.css' | asset_url }}"
+      data-config-path="{{product.metafields.customproductbuilder['configurableUrl']}}"
+		data-cpb-user-id="{{customer.id}}"
+      data-customer-id="{{customer.id}}"/>
+
+	{{ 'customproductbuilder.js' | asset_url | script_tag }}
+
+    <script>
+      $(document).ready(function() {
+        var productURL = jQuery('#product-builder').attr('product-handle');
+        jQuery.getJSON('/products/' + productURL + '.js', function(product) {
+          var addTitleAndDescription = (function() {
+            if( $('.cpb-add-to-cart-button span').length) {
+              $('.cpb-preview-sticky').prepend($('<h2 class="cpb-panel-title">Diamond Bridal Ring <span class="diamond-ct">1/4</span> ct tw 10K White and Rose Gold</h2>'));
+            }      
+            else {
+              window.requestAnimationFrame(addTitleAndDescription); 
+            } 
+          }); 
+          addTitleAndDescription();
+        }); 
+        $(document).on("click",".cpb-panel-categories-container .cpb-category:nth-child(2) .cpb-option-type-img",function(e){
+        	var title = $(this).find(".cpb-option-label").text();
+          	console.log(title);
+          	var split_title1 = title.split("CT.")[0];
+          	var split_title2 = split_title1.split(" ")[1];
+          $("h2.cpb-panel-title span").text(split_title2);
+        });
+      });
+    </script>
+{% else %}{% section 'product-template' %}{% endif %}
+
+{% else %}{% section 'product-template' %}
+{% endif %}
+{% comment %} == END CUSTOM PRODUCT BUILDER GENERATED CODE. DO NOT EDIT OR REMOVE. == {% endcomment %}
